@@ -7,16 +7,16 @@ from math import ceil
 inputfile = open(sys.argv[1])
 banks = [ int(x) for x in inputfile.readline().split() ]
 
-seen = { 'bleh' : 1 }
+seen = { }
+cycles = 0
 
-while True:
+while not tuple(banks) in seen:
     print "Banks: {0}".format(banks)
 
     # Register that we've seen this state
-    bankstate = tuple(banks)
-    print bankstate
+    seen[tuple(banks)] = cycles
 
-    seen[bankstate] += 1
+    cycles += 1
 
     # Find lowest bank with most blocks
     maxb = 0
@@ -26,24 +26,28 @@ while True:
             maxb = banks[i]
             maxi = i
 
-    print "Most blocks in bank {0}: {1}".format(maxi, maxb)
+    print "Most blocks in bank {0}: {1}, emptying".format(maxi, maxb)
+    banks[maxi] = 0
 
     blocksperbank = int ( ceil( float(maxb) / len ( banks ) ) )
-    blocksleftover = maxb - ( blocksperbank * ( len(banks) - 1 ) )
 
-    print "{0} blocks over {1} banks and {2} left over".format(
-            blocksperbank,
-            len(banks) - 1,
-            blocksleftover
-    )
+    print "Allocating {0} blocks per bank, as long as {1} lasts".format(blocksperbank, maxb)
 
-    for i in range(0,len(banks)):
-        if i == maxi:
-            banks[i] = blocksleftover
+    remainingblocks = maxb
+    reallocateto = maxi
+
+    while remainingblocks > 0:
+        reallocateto += 1
+        reallocateto %= len(banks)
+        if ( remainingblocks > blocksperbank ):
+            print "\tAllocating {1} new blocks to block {0}".format(reallocateto, blocksperbank)
+            banks[reallocateto] += blocksperbank
         else:
-            banks[i] += blocksperbank
+            print "\tAllocating {1} new blocks to block {0}".format(reallocateto, remainingblocks)
+            banks[reallocateto] += remainingblocks
+            break
+        remainingblocks -= blocksperbank
 
 
-    print "Now we have banks: {0}".format(banks)
-
-    break
+print "We've seen {0} before, on cycle {1}".format(banks, seen[tuple(banks)])
+print "Got back after {0} cycles, loop is {1} cycles".format(cycles, cycles - seen[tuple(banks)])
