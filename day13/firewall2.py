@@ -1,7 +1,6 @@
 #!/usr/bin/python
 
 import sys
-from fractions import gcd
 
 layers = {}
 
@@ -48,14 +47,7 @@ def amitrapped(delay):
 # No point looking beyond the lowest common multiple of the depths, as
 # after this we're just looping.
 
-depths = layers.values()
-lcm = depths[0]
-for i in depths:
-    lcm = lcm * i / gcd(lcm, i)
-
-print "Attempting delays up to", lcm
-
-for delay in range(0,lcm):
+for delay in range(0,10000000):
     print "Attempting with a delay of", delay
     if amitrapped(delay) == False:
         print "Got through with no problems after a delay of", delay, "ps"
