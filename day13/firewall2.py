@@ -2,12 +2,18 @@
 
 import sys
 
-layers = {}
+bouncystack_cache = {}
 
 def scannerpos(time, depth):
-    print "\tWhere is the scanner in a stack of depth", depth, "after", time
-    bouncystack = range(0,depth) + range (depth - 2, 0, -1)
-    print "\t", bouncystack
+    # print "\tWhere is the scanner in a stack of depth", depth, "after", time
+    if depth in bouncystack_cache:
+        bouncystack = bouncystack_cache[depth]
+        # print "\tCached this bouncystack", bouncystack
+    else:
+        bouncystack = range(0,depth) + range (depth - 2, 0, -1)
+        # print "\tNew bouncystack", bouncystack
+        bouncystack_cache[depth] = bouncystack
+
     position = time % len(bouncystack)
 
     return bouncystack[position]
@@ -15,7 +21,9 @@ def scannerpos(time, depth):
 # Read the input
 inputfile = open(sys.argv[1])
 
-# Read input, build structures
+layers = {}
+
+# Read input, build "sparse array" dictionary
 for line in inputfile:
     layer = int(line.split(': ')[0])
     depth = int(line.split(': ')[1])
