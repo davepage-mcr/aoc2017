@@ -7,15 +7,14 @@ seen = {}
 
 num_regions = 0
 
-characters = '0123456789abcdefghijklmnopqrstuvwxyz'
+characters = '123456789abcdefghijklmnopqrstuvwxyz'
 colours = ['red', 'green', 'yellow', 'blue', 'magenta', 'cyan', 'white']
 
 def findregions(x, y, region):
     global num_regions
 
-    if mymap[y][x] == '0' or mymap[y][x] == ' ':
+    if mymap[y][x] == '0':
         # This is not a region
-        mymap[y][x] = ' '
         return
 
     coords = tuple([x,y])
@@ -60,8 +59,8 @@ for y in range(0,len(mymap)):
 
 for line in mymap:
     for region in line:
-        if region == ' ':
-            print(region, end='')
+        if region == '0':
+            print(' ', end='')
         else:
             cprint(characters[region % len(characters)], colours[region % len(colours)], end='')
     print("")
