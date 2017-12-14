@@ -1,12 +1,14 @@
-#!/usr/bin/python
+#!/usr/bin/python3
 
 import sys
+from termcolor import cprint
 
 seen = {}
 
 num_regions = 0
 
 characters = '0123456789abcdefghijklmnopqrstuvwxyz'
+colours = ['red', 'green', 'yellow', 'blue', 'magenta', 'cyan', 'white']
 
 def findregions(x, y, region):
     global num_regions
@@ -23,12 +25,13 @@ def findregions(x, y, region):
 
     if region == None:
         num_regions += 1
-        print "Found region", num_regions, "starting at", coords
+        # print "Found region", num_regions, "starting at", coords
     else:
-        print "Extending region", num_regions, "to", coords
+        # print "Extending region", num_regions, "to", coords
+        pass
 
     seen[coords] = 1
-    mymap[y][x] = characters[num_regions % len(characters)]
+    mymap[y][x] = num_regions;
 
     # Now recurse if it fits
     if x - 1 >= 0:
@@ -56,6 +59,11 @@ for y in range(0,len(mymap)):
         findregions(x,y,None)
 
 for line in mymap:
-    print "".join(line)
+    for region in line:
+        if region == ' ':
+            print(region, end='')
+        else:
+            cprint(characters[region % len(characters)], colours[region % len(colours)], end='')
+    print("")
 
-print "Total regions:", num_regions
+print("Total regions:", num_regions)
