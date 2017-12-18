@@ -16,7 +16,7 @@ def printbuffer():
             print(circbuffer[i], end="\t")
     print()
 
-for i in range(1,50000001):
+for i in range(1,50000000 + 1):
     if i % 10000 == 0:
         print(i) 
 
@@ -28,20 +28,23 @@ for i in range(1,50000001):
 
     # Instruction 2: Insert new value i after current position
     # print("Inserting new value",i,"after current position", current_position)
-    # print("Instructions up to new position:", circbuffer[0:current_position+1])
-    # print("Instructions after new position:", circbuffer[current_position+1:])
 
-    circbuffer = circbuffer[0:current_position+1] + [ i ] + circbuffer[current_position+1:]
+    circbuffer.insert(current_position,i)
 
-    # Instruction 3: Incrememnt current_position
+    # circbuffer = circbuffer[0:current_position+1] + [ i ] + circbuffer[current_position+1:]
+
+    # Instruction 3: Increment current_position
     current_position = ( current_position + 1 ) % len(circbuffer)
 
 max_value = max(circbuffer)
 max_index = circbuffer.index(max_value)
 print("Max value", max_value, "is at index", max_index)
 
+after_max = ( max_index + 1 ) % len(circbuffer)
+print("Value following max is", circbuffer[after_max])
+
 zero_index = circbuffer.index(0)
-print("0 is at index", max_index)
+print("0 is at index", zero_index)
 
 after_zero = ( zero_index + 1 ) % len(circbuffer)
-print("Value following 0 is", circbuffer[after_index])
+print("Value following 0 is", circbuffer[after_zero])
