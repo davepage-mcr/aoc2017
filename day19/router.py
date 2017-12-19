@@ -10,6 +10,9 @@ mymap = []
 # directions: 0 - down 1 - right 2 - up 3 - left
 directions = [ 'down', 'right', 'up', 'left' ]
 
+# How we change x and y coordinates if we move in this direction
+movedelta = [ [ 0, 1 ], [1, 0], [0,-1], [-1,0] ]
+
 inputfile = open(sys.argv[1])
 for line in inputfile:
     mymap.append( line.rstrip('\n') )
@@ -42,14 +45,8 @@ while True:
                 exit()
             visited.append(char)
 
-        if d == 0:
-            y += 1
-        elif d == 1:
-            x += 1
-        elif d == 2:
-            y -= 1
-        elif d == 3:
-            x -= 1
+        x += movedelta[d][0]
+        y += movedelta[d][1]
 
     elif char == '+':       # We've hit a corner and need to go a different direction without doubling back on ourselves
         print("Hit a corner at", tuple([x,y]), "while heading", directions[d], d)
@@ -59,63 +56,36 @@ while True:
         # - we're not at an edge where going D would make us fall off
         # - the square in direction D is navigable (i.e. not ' ')
 
-        # Can we go down if we're not going up?
-        if d != 2:
-            print("\tNot going up; considering going down")
-            if y >= len(mymap) - 1:
-                print("\t\tCan't go down, we're at the bottom")
-            elif mymap[y+1][x] == ' ':
-                print("\t\tCan't go down, it's a space")
-            else:
-                print("\t\tGoing down")
-                d = 0
-                y += 1
-                continue
-        else:
-            print("\tGoing up; can't consider going down as it would double back")
+        turnedcorner = False
 
-        # Can we go right if we're not going left?
-        if d != 3:
-            print("\tNot going left; considering going right")
-            if x >= len(mymap[y]) - 1:
-                print("\t\tCan't go right; we're at the right edge")
-            elif mymap[y][x+1] == ' ':
-                print("\t\tCan't go right: it's a space")
+        for pd in range(0,len(directions)):
+            od = ( pd + 2 ) % len(directions)
+            if d != od:
+                print("\tNot going", directions[od], "; considering going", directions[pd])
+                if movedelta[pd][0] == -1 and x == 0:
+                    print("\t\tCan't go", directions[pd], "; we're at an edge")
+                elif movedelta[pd][0] == 1 and x == len(mymap[y]) - 1:
+                    print("\t\tCan't go", directions[pd], "; we're at an edge")
+                elif movedelta[pd][1] == -1 and y == 0:
+                    print("\t\tCan't go", directions[pd], "; we're at an edge")
+                elif movedelta[pd][1] == 1 and y == len(mymap) - 1:
+                    print("\t\tCan't go", directions[pd], "; we're at an edge")
+                else:
+                    print("\t\tCan go", directions[pd], "if navigable", movedelta[pd])
+                    if mymap[y + movedelta[pd][1]][x + movedelta[pd][0]] == ' ':
+                        print("\t\tCan't go", directions[pd], "; it's a space")
+                    else:
+                        print("\t\tWe can move", directions[pd])
+                        d = pd
+                        x += movedelta[d][0]
+                        y += movedelta[d][1]
+                        turnedcorner = True
             else:
-                print("\t\tGoing right")
-                d = 1
-                x += 1
-                continue
-        else:
-            print("\tGoing left; Can't consider going right as it would double back")
+                print("\tGoing",directions[od], "; can't consider", directions[pd], "as it would double back")
 
-        # Can we go up if we're not going down?
-        if d != 0:
-            print("\tNot going down; considering going up")
-            if y == 0:
-                print("\t\tCan't go up; we're at the top")
-            elif mymap[y-1][x] == ' ':
-                print("\t\tCan't go up: it's a space")
-            else:
-                print("\t\tGoing up")
-                d = 2
-                y -=1
-                continue
-
-        # Can we go left if we're not going right?
-        if d != 1:
-            print("\tNot going right; considering going left")
-            if x == 0:
-                print("\t\tCan't go left; we're at the left edge")
-            elif mymap[y][x-1] == ' ':
-                print("\t\tCan't go left: It's a space")
-            else:
-                d = 3
-                x -= 1
-                continue
-
-        print("Nowhere to turn at", tuple([x,y]))
-        exit()
+        if turnedcorner == False:
+            print("Nowhere to turn at", tuple([x,y]))
+            exit()
 
     elif char == ' ':
         steps -= 1
