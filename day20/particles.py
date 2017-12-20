@@ -7,20 +7,17 @@ class Particle:
         self.num = num
         self.classdata = {}
         self.classdata = classdata
-        self.manhattan = self.calcmanhattan()
 
     def calcmanhattan(self):
         dist = 0
         for i in range(0,3):
             dist += abs(self.classdata['p'][i])
-
         return dist
 
     def tick(self):
         for i in range(0,3):
             self.classdata['v'][i] += self.classdata['a'][i]
             self.classdata['p'][i] += self.classdata['v'][i]
-        self.manhattan = self.calcmanhattan()
 
 def sortbymanhattan(a, b):
     return cmp( a.manhattan, b.manhattan )
@@ -53,5 +50,8 @@ for t in range(0,10000):
         p.tick()
 
 # Now see which is closest
+for p in particles:
+    p.manhattan = p.calcmanhattan()
+
 particles.sort( key=lambda part: part.manhattan )
 print( particles[0].num, "is closer" )
